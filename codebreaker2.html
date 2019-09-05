@@ -34,14 +34,33 @@
 		var game = document.getElementById('gameboard');
 		var game_ctx = game.getContext('2d');
 		var game_mousePos = 0;
-		// create Color Select context and mouse position tracker
+		// add GameBoard event listener for click events
+		
+		// create Color Select context and mouse position tracker, and a variable to hold the current color selection
 		var select = document.getElementById('selector');
 		var select_ctx = select.getContext('2d');
 		var select_mousePos = 0;
-		
-		
-		
 		var select_color = 'red';
+		
+		// add EventListener to Select canvas and define its function (to get the color of the square clicked in
+		
+		select.addEventListener("click", function(evt) {
+			
+			select_mousePos = getSelectMousePos(select, evt);
+			document.getElementById("output").innerHTML = select_mousePos.x;
+		});
+		
+		function getSelectorColorAtMouseClick() {
+			
+		}
+		
+		function getSelectMousePos(select, evt) {
+			var rect = select.getBoundingClientRect();
+			return {
+				x: evt.clientX - rect.left,
+				y: evt.clientY - rect.top
+			}
+		}
 		
 		// define colors
 		var color_boxes_shades = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo'];
