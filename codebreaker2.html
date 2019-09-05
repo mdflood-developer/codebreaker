@@ -42,25 +42,7 @@
 		var select_mousePos = 0;
 		var select_color = 'red';
 		
-		// add EventListener to Select canvas and define its function (to get the color of the square clicked in
-		
-		select.addEventListener("click", function(evt) {
-			
-			select_mousePos = getSelectMousePos(select, evt);
-			document.getElementById("output").innerHTML = select_mousePos.x;
-		});
-		
-		function getSelectorColorAtMouseClick() {
-			
-		}
-		
-		function getSelectMousePos(select, evt) {
-			var rect = select.getBoundingClientRect();
-			return {
-				x: evt.clientX - rect.left,
-				y: evt.clientY - rect.top
-			}
-		}
+
 		
 		// define colors
 		var color_boxes_shades = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo'];
@@ -123,6 +105,37 @@
 				};
 			};
 		}
+
+		// --- USER INPUT FUNCTIONS ---
+
+		// add EventListener to Select canvas and define its function (to get the color of the square clicked in
+		
+		select.addEventListener("click", function(evt) {
+			
+			select_mousePos = getSelectMousePos(select, evt);
+			select_color = getSelectorColorAtMouseClick(select_mousePos)
+			document.getElementById("output").innerHTML = select_color;
+		});
+		
+		function getSelectorColorAtMouseClick(inputxy) {
+			var newcolor = 'none';
+			for (var i = 0; i < 6; i++) {
+				var boxtocheck = color_rect_coords[i];
+				if (inputxy.x > boxtocheck.x && inputxy.y > boxtocheck.y) {
+					newcolor = boxtocheck.boxcolor;			
+				}
+			
+			}
+			return newcolor;
+		}
+		
+		function getSelectMousePos(select, evt) {
+			var rect = select.getBoundingClientRect();
+			return {
+				x: evt.clientX - rect.left,
+				y: evt.clientY - rect.top
+			}
+		}
 	  
 
 		// --- DRAWING FUNCTIONS ---
@@ -156,6 +169,7 @@
 			game_ctx.clearRect(0,0, game.width, game.height);
 			drawGamePegs();
 			drawActiveColor();
+			game_ctx.fillStyle = 'black'
 			game_ctx.font = "12px Arial";
 			game_ctx.fillText("Active Color", 300, 625);
 		}
