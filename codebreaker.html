@@ -1,0 +1,204 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CodeBreaker</title>
+    <style type="text/css">
+      body {
+        background-color: #2339de;
+      }
+
+
+      canvas {
+        display: block;
+        background-color: #23dec8;
+        border: 1px solid black;
+        margin: 0 auto;
+      }
+      td {
+        background-color: white;
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+
+  <body>
+    <center><img src="CodeBreaker.png"></center>
+    <canvas id="gameboard" width="400" height="700"></canvas>
+    <canvas id="selector" width="370" height="70"></canvas>
+    <p id="output"></p>
+
+    <script>
+		document.getElementById('output').innerHTML = 0;
+		
+		// create GameBoard context and mouse position tracker
+		var game = document.getElementById('gameboard');
+		var game_ctx = game.getContext('2d');
+		var game_mousePos = 0;
+		// add GameBoard event listener for click events
+		
+		// create Color Select context and mouse position tracker, and a variable to hold the current color selection
+		var select = document.getElementById('selector');
+		var select_ctx = select.getContext('2d');
+		var select_mousePos = 0;
+		var select_color = 'red';
+		
+		// game logic variables
+		var activeRow = 7; // decrements by 1 for each completed line
+		var solution = ['red', 'red', 'red', 'red']; // TODO: replace with function to randomly generate solution at startup
+		
+		
+		// define colors
+		var color_boxes_shades = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo'];
+
+		// create the color selection boxes for the Color Select canvas
+		var color_rect_coords = makeColorRectCoords();
+		makeColorRectBoxes();
+
+		function makeColorRectCoords() {
+			var rectarray = [];
+			for (var i = 0; i < 6; i++) {
+				var newrect = {x:10 + 60*i, y:10, height:50, width:50, boxcolor:color_boxes_shades[i]};
+				rectarray[i] = newrect;
+			}
+			return rectarray;
+		}
+		
+		function makeColorRectBoxes() {
+			for (var i = 0; i < 6; i++) {
+				var newPath = new Path2D();
+				newPath.rect(
+					color_rect_coords[i].x,
+					color_rect_coords[i].y,
+					color_rect_coords[i].height,
+					color_rect_coords[i].width);
+
+				color_rect_coords[i].rectangle = newPath;
+			}
+		}	
+		
+		// create the game pegs for the GameBoard canvas
+		var gamepegs = makeGamePegs();
+		makePegBoxes();
+		
+		function makeGamePegs() {
+			var pegs = [];
+				for (var c=0; c<8; c++) {
+					pegs[c] = ['x'];
+					for (var r=0; r<4; r++) {
+						pegs[c][r] = {x:10 + 60*r, 
+							y:220 + 60*c,
+							height:50,
+							width:50,
+							color:'white'};
+					}
+				}				
+			return pegs;
+		}
+		
+		function makePegBoxes() {
+			for (var c = 0; c < 8; c++) {
+				for (var r = 0; r < 4; r++) {
+					var boxPath = new Path2D();
+					boxPath.rect(
+						gamepegs[c][r].x, 
+						gamepegs[c][r].y, 
+						gamepegs[c][r].width, 
+						gamepegs[c][r].height);
+					gamepegs[c][r].rectangle = boxPath;
+				};
+			};
+		}
+
+		// --- USER INPUT FUNCTIONS ---
+
+		// add EventListener to Select canvas and define its function (to get the color of the square clicked in
+		
+		select.addEventListener("click", function(evt) {
+			
+			select_mousePos = getSelectMousePos(select, evt);
+			select_color = getSelectorColorAtMouseClick(select_mousePos)
+			document.getElementById("output").innerHTML = select_color;
+		});
+		
+		function getSelectorColorAtMouseClick(inputxy) {
+			var newcolor = 'none';
+			for (var i = 0; i < 6; i++) {
+				var boxtocheck = color_rect_coords[i];
+				if (inputxy.x > boxtocheck.x && inputxy.y > boxtocheck.y) {
+					newcolor = boxtocheck.boxcolor;			
+				}
+			}
+			return newcolor;
+		}
+		
+		function getSelectMousePos(gameboard, evt) {
+			var rect = gameboard.getBoundingClientRect();
+			return {
+				x: evt.clientX - rect.left,
+				y: evt.clientY - rect.top
+			}
+		}
+		
+		// add EventListener to GameBoard canvas and define its functions (place color at square clicked if and only if the row is valid
+		
+		game.addEventListener("click", function(evt) {
+			game_mousePos = getGameMousePos(game, evt);
+			for (var r = 0; r < 4; r++) {
+				var activebox = gamepegs[activeRow][r];
+				if (game_mousePos.x > activebox.x && game_mousePos.y > activebox.y && game_mousePos.x < activebox.x + 50 && game_mousePos.y < activebox.y + 50) {
+					activebox.color = select_color;
+				}
+			}
+		});
+		function getGameMousePos(game, evt) {
+			var rect = game.getBoundingClientRect();
+			return {
+				x: evt.clientX - rect.left,
+				y: evt.clientY - rect.top
+			}
+		}
+
+		// --- DRAWING FUNCTIONS ---
+		function drawColorSelector() {
+			for (var i = 0; i < 6; i++) {	
+				select_ctx.fillStyle = color_rect_coords[i].boxcolor;
+				select_ctx.fill(color_rect_coords[i].rectangle);
+			};
+		}
+		
+		function drawGamePegs() {
+			for (var c = 0; c < 8; c++) {
+				for (var r = 0; r < 4; r++) {
+					game_ctx.fillStyle = gamepegs[c][r].color;
+					game_ctx.fill(gamepegs[c][r].rectangle);
+				}
+			}
+		}
+		
+		function drawActiveColor() {
+			game_ctx.beginPath();
+			game_ctx.rect(305, 630, 50, 50);
+			game_ctx.fillStyle = select_color;
+			game_ctx.fill();
+			game_ctx.closePath();
+		}
+		
+		// --- MAIN DRAWING FUNCTION ---
+		function drawGameBoard() {
+			
+			game_ctx.clearRect(0,0, game.width, game.height);
+			drawGamePegs();
+			drawActiveColor();
+			game_ctx.fillStyle = 'black'
+			game_ctx.font = "12px Arial";
+			game_ctx.fillText("Active Color", 300, 625);
+		}
+	
+		drawColorSelector();
+	
+		setInterval(drawGameBoard, 50);
+		// -----------------------------
+
+    </script>
+  </body>
+</html>
