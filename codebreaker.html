@@ -6,31 +6,67 @@
       body {
         background-color: #2339de;
       }
-
-
       canvas {
         display: block;
-        background-color: #23dec8;
-        border: 1px solid black;
+        border: 0px solid black;
         margin: 0 auto;
       }
+	  table {
+		margin: 0 auto;
+		border: 0px solid black;
+	  }
       td {
-        background-color: white;
-        border: 1px solid black;
+        background-color: #2339de;
+        border: 2.5px solid black;
       }
+	  td.wood {
+		background-image: url("Melamine-wood-001.png");
+	  }
     </style>
   </head>
 
   <body>
     <center><img src="CodeBreaker.png"></center>
-    <canvas id="gameboard" width="400" height="700"></canvas>
-    <canvas id="selector" width="370" height="70"></canvas>
+	<table>
+	<tr>
+		<td class="wood" width=30% style="padding:5px">
+			<p><b>Goal:</b> Your mission in Codebreaker is to guess a secret four-color code created by the game. You have eight chances to guess the correct code. Every time you Test a row, the game will give you feedback based on your answer.</p>
+			<p><b>How To Play</b></p>
+			<p>1) Select a color from the six colors in the bottom center frame. The "Active Color" square in the bottom right of the game board shows your currently selected color.</p>
+			<p>2) Click on the white boxes within the black rectangle on the gameboard to change their color and build your guess at the hidden code.</p>
+			<p>3) When you have completed the row, click on "Test Row" to test your guess against the hidden code. You may only submit a guess once all the white squares in the black rectangle have been colored in.</p>
+			<p>4) If your guesses are correct, you win. If you are incorrect, the game will display feedback white and black colored squares to the right of the active row of the gameboard. The guide to interpreting the feedback is on the right frame.</p>
+			<p>5) If you run out of guesses (have filled up all the rows without guessing the correct code) the game is over. The correct answer will be displayed on the white rectangle in the upper left of the game board.
+			<p>5) To erase your current row, click "Reset Row"</p>
+			<p>6) To start over with a clean board and a new random hidden code, click "New Game"</p>
+		</td>
+		<td class="wood" width=40%>
+			<canvas id="gameboard" width="400" height="700"></canvas>
+		</td>
+		<td class="wood" width=30%>
+			<p>Feedback Guide:<b></b></p>
+			<p></p>
+		</td>
+	</tr>
+	<tr>
+		<td class="wood" width=30%>
+			<p></p>
+		</td>
+		<td class="wood">
+			<canvas id="selector" width="370" height="70"></canvas>
+		</td>
+		<td class="wood" width=30%>
+			RIGHT FRAME
+		</td>
+	</table>
 	<div align="center">
 		<button onclick="newGame()">New Game</button>
 		<button onclick="resetRow()">Reset Row</button>
 		<button onclick="testRow()">Test Row</button>
     </div>
 	<p id="output"></p>
+	<p>Sources</p>
+	<p>Wood panelling: <a href="https://www.pixeden.com/graphic-web-backgrounds/wood-pattern-background" target="_blank">www.pixeden.com</a>
 
     <script>
 		document.getElementById('output').innerHTML = 0;
@@ -235,7 +271,7 @@
 		
 		function drawActiveColor() {
 			game_ctx.beginPath();
-			game_ctx.rect(305, 630, 50, 50);
+			game_ctx.rect(340, 640, 50, 50);
 			game_ctx.fillStyle = select_color;
 			game_ctx.fill();
 			game_ctx.closePath();
@@ -256,19 +292,26 @@
 			game_ctx.strokeRect(5, game.height-485+(60*activeRow), 240, 60);
 		}
 		
+		function drawAnswerFrame() {
+			game_ctx.beginPath();
+			game_ctx.fillStyle = 'white';
+			game_ctx.fillRect(0, 0, 250, 70);
+		}
+		
 		// --- MAIN DRAWING FUNCTION ---
 		function drawGameBoard() {
 			
 			game_ctx.clearRect(0,0, game.width, game.height);
 			drawGamePegs();
 			drawActiveColor();
+			drawAnswerFrame();
 			drawActiveBox();
 			if (show_answer == true) {
 				drawAnswer();
 			}
 			game_ctx.fillStyle = 'black'
 			game_ctx.font = "12px Arial";
-			game_ctx.fillText("Active Color", 300, 625);
+			game_ctx.fillText("Active Color", 331, 637);
 		}
 	
 		drawColorSelector();
