@@ -1,6 +1,7 @@
 FEATURES TO BE ADDED;
   - side bar with game rules (implement with table element)
   - clue graphics (showing whether player has right peg in right place)
+  - random solution generator
   - disable game play on "game" canvas when answer is shown (either win or lose)
     -have a "play_game" variable that is tested by the event listener. Reset by newGame() function.
   - show "YOU WIN!" or "GAME OVER"
