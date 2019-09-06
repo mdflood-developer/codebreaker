@@ -1,0 +1,14 @@
+FEATURES TO BE ADDED;
+  - side bar with game rules (implement with table element)
+  - clue graphics (showing whether player has right peg in right place)
+  - disable game play on "game" canvas when answer is shown (either win or lose)
+    -have a "play_game" variable that is tested by the event listener. Reset by newGame() function.
+  - show "YOU WIN!" or "GAME OVER"
+  
+  
+<-- HOW TO GIVE FEEDBACK --> (https://www.wikihow.com/Play-Mastermind step 4)
+In our example above, the code maker secretly chose Yellow Yellow Green Blue. The code breaker guessed Blue Orange Green Purple. The code maker looks at this guess to find out which hint pegs to place:
+Peg #1 is Blue. There is a blue in the code, but it is not in position #1. This earns a white hint peg.
+Peg #2 is Orange. There is no orange in the code, so no hint peg gets put down.
+Peg #3 is Green. There is a green in the code, and it is in position #3. This earns a red (or black) hint peg.
+Peg #4 is Purple. There is no purple in the code, so no hint peg gets put down.
