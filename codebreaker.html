@@ -25,7 +25,12 @@
     <center><img src="CodeBreaker.png"></center>
     <canvas id="gameboard" width="400" height="700"></canvas>
     <canvas id="selector" width="370" height="70"></canvas>
-    <p id="output"></p>
+	<div align="center">
+		<button onclick="newGame()">New Game</button>
+		<button onclick="resetRow()">Reset Row</button>
+		<button onclick="testRow()">Test Row</button>
+    </div>
+	<p id="output"></p>
 
     <script>
 		document.getElementById('output').innerHTML = 0;
@@ -45,6 +50,7 @@
 		// game logic variables
 		var activeRow = 7; // decrements by 1 for each completed line
 		var solution = ['red', 'red', 'red', 'red']; // TODO: replace with function to randomly generate solution at startup
+		var show_answer = false;
 		
 		
 		// define colors
@@ -158,6 +164,58 @@
 			}
 		}
 
+		// page button functions
+		function newGame() {
+			gamepegs = makeGamePegs();
+			makePegBoxes();
+			activeRow = 7;
+			show_answer = false;
+			document.getElementById('output').innerHTML = "new game";
+		}
+		
+		function resetRow() {
+			for (var r = 0; r < 4; r++) {
+				var activebox = gamepegs[activeRow][r];
+				activebox.color = 'white';			
+			}
+		}
+		
+		function testRow() {
+			for (var r = 0; r < 4; r++) {
+				// test for whether there are any white cells in the active row
+				if (gamepegs[activeRow][r].color == 'white') {
+					alert("Rows cannot have white squares.");
+					return;
+				}
+			}
+			var row_to_test = [
+				gamepegs[activeRow][0].color,
+				gamepegs[activeRow][1].color,
+				gamepegs[activeRow][2].color,
+				gamepegs[activeRow][3].color];
+			var is_match = testRowEqualsAnswer(row_to_test, solution);
+			if (is_match == false) {
+				if (activeRow == 0) {
+					show_answer = true;
+				} else {
+					activeRow--;				
+				}
+			
+			} else if (is_match == true) {
+				show_answer = true;
+			}
+			document.getElementById('output').innerHTML = is_match;
+		}
+		
+		function testRowEqualsAnswer(testing_row, correct) {
+			for (var i = 0; i < 4; i++) {
+				if (testing_row[i] !== correct[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 		// --- DRAWING FUNCTIONS ---
 		function drawColorSelector() {
 			for (var i = 0; i < 6; i++) {	
@@ -183,20 +241,38 @@
 			game_ctx.closePath();
 		}
 		
+		function drawAnswer() {
+			for (var i = 0; i < 4; i++) {
+				game_ctx.beginPath();
+				game_ctx.rect(10 + 60*i, 10, 50, 50);
+				game_ctx.fillStyle = solution[i];
+				game_ctx.fill();
+				game_ctx.closePath();
+			}
+		}
+		
+		function drawActiveBox() {
+			game_ctx.beginPath();
+			game_ctx.strokeRect(5, game.height-485+(60*activeRow), 240, 60);
+		}
+		
 		// --- MAIN DRAWING FUNCTION ---
 		function drawGameBoard() {
 			
 			game_ctx.clearRect(0,0, game.width, game.height);
 			drawGamePegs();
 			drawActiveColor();
+			drawActiveBox();
+			if (show_answer == true) {
+				drawAnswer();
+			}
 			game_ctx.fillStyle = 'black'
 			game_ctx.font = "12px Arial";
 			game_ctx.fillText("Active Color", 300, 625);
 		}
 	
 		drawColorSelector();
-	
-		setInterval(drawGameBoard, 50);
+		setInterval(drawGameBoard, 10);
 		// -----------------------------
 
     </script>
