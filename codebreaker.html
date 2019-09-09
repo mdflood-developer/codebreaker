@@ -54,7 +54,8 @@
 	</tr>
 	<tr>
 		<td class="wood" width=30%>
-			<p></p>
+			<p id="output"></p>
+			<p id="outputB"></p>
 		</td>
 		<td class="wood">
 			<canvas id="selector" width="370" height="70"></canvas>
@@ -68,8 +69,8 @@
 		<button onclick="resetRow()">Reset Row</button>
 		<button onclick="testRow()">Test Row</button>
     </div>
-	<p id="output"></p>
-	<p id="outputB"></p>
+	
+
 	<p>Sources</p>
 	<p>Wood panelling: <a href="https://www.pixeden.com/graphic-web-backgrounds/wood-pattern-background" target="_blank">www.pixeden.com</a>
 
@@ -247,6 +248,7 @@
 			gamepegs = makeGamePegs();
 			makePegBoxes();
 			feedback_array = makeFeedbackArray();
+			solution = genRandomSolution();
 			activeRow = 7;
 			show_answer = false;
 			win_or_lose_message = "";
@@ -300,24 +302,30 @@
 		}
 		
 		function setFeedback(rowbeingtested, hiddencode) {
-			var temp_rowbeingtested = rowbeingtested;
-			var temp_hiddencode = hiddencode;
+			var temp_rowbeingtested = [...rowbeingtested];
+			var temp_hiddencode = [...hiddencode];
 			var num_correct_place = 0;
 			var num_correct_color = 0;
-			var matches = []
-			var matches_index = 0;
 			// count number of colored squares that match the hidden code
 			for (var i = 0; i < 4; i++) {
 				if (temp_rowbeingtested[i] == temp_hiddencode[i]) {
 					num_correct_place++;
-					matches[matches_index] = i;
-					matches_index++;
+					temp_rowbeingtested[i] = 0;
+					temp_hiddencode[i] = 0;
 				}
 			}
+			for (var i = 0; i < 4; i++) {
+				if (temp_rowbeingtested[i] != 0) {
+					for (j = 0; j < 4; j++) {
+						if (temp_rowbeingtested[i] == temp_hiddencode[j] && temp_hiddencode[j] != 0) {
+							num_correct_color++;
+							temp_hiddencode[j] = 0;						
+						}
+					}
+				}	
+			}
 			
-			
-			
-			document.getElementById("output").innerHTML = matches;
+			document.getElementById("output").innerHTML = temp_rowbeingtested;
 			feedback_array[activeRow][0] = num_correct_place;
 			feedback_array[activeRow][1] = num_correct_color;
 		}
