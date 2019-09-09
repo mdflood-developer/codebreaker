@@ -8,7 +8,7 @@
       }
       canvas {
         display: block;
-        border: 0px solid black;
+        border: 1px solid black;
         margin: 0 auto;
       }
 	  table {
@@ -27,13 +27,13 @@
   </head>
 
   <body>
-    <center><img src="CodeBreaker.png"></center>
+    <center><img src="CodeBreaker.png" width="350px"></center>
 	<table>
 	<tr>
-		<td class="wood" width="200px" style="padding:5px">
+		<td class="wood" width="400px" style="padding:5px">
 			<p><b>Goal:</b> Your mission in Codebreaker is to guess a secret four-color code created by the game. You have eight chances to guess the correct code. Every time you Test a row, the game will give you feedback based on your answer.</p>
 			<p><b>How To Play:</b></p>
-			<p>1) Select a color from the six colors in the bottom center frame. The "Active Color" square in the bottom right of the game board shows your currently selected color.</p>
+			<p>1) Select a color from the six colors in the bottom center frame. The "Active Color" bar in the bottom of the game board (above the color selection) shows your currently selected color.</p>
 			<p>2) Click on the white boxes within the black rectangle on the gameboard to change their color and build your guess at the hidden code.</p>
 			<p>3) When you have completed the row, click on "Test Row" to test your guess against the hidden code. You may only submit a guess once all the white squares in the black rectangle have been colored in.</p>
 			<p>4) If your guesses are correct, you win. If you are incorrect, the game will display feedback white and black colored squares to the right of the active row of the gameboard. The guide to interpreting the feedback is on the right frame.</p>
@@ -41,39 +41,33 @@
 			<p>5) To erase your current row, click "Reset Row"</p>
 			<p>6) To start over with a clean board and a new random hidden code, click "New Game"</p>
 		</td>
-		<td class="wood" width=40%>
-			<canvas id="gameboard" width="400" height="700"></canvas>
+		<td class="wood" width="400px">
+			<canvas id="gameboard" width="350" height="650"></canvas>
+			<canvas id="selector" width="370" height="70"></canvas>
+			<div align="center">
+				<button onclick="newGame()">New Game</button>
+				<button onclick="resetRow()">Reset Row</button>
+				<button onclick="testRow()">Test Row</button>
+			</div>
+		<div align="center">
+			<p>Copyright (C) 2019 Michael Flood</p>
+		</div>
 		</td>
-		<td class="wood" width="200px">
+		<td class="wood" width="400px" style="padding:5px">
 			<p><b>Feedback Guide:</b></p>
 			<p>When you click "Test Row", your answer is compared to the hidden code.</p>
 			<p>Results are given based on two factors:</p>
 			<p>(i) How many colors you have on the correct square.</p>
 			<p>(ii) How many colors you have on the incorrect square.</p>
+			<p><b>Examples:</b></p>
+			<p> 4 colors correct, all on the correct square: [4,0]</p>
+			<p> 4 colors correct, none on the correct square: [0,4]</p>
+			<p> 1 color correct and on the right square, and two colors correct but on the wrong squares: [1,2]</p>
+			<p><b>Sources</b></p>
+			<p>Wood panelling: <a href="https://www.pixeden.com/graphic-web-backgrounds/wood-pattern-background" target="_blank">www.pixeden.com</a>
 		</td>
 	</tr>
-	<tr>
-		<td class="wood" width=30%>
-			<p id="output"></p>
-			<p id="outputB"></p>
-		</td>
-		<td class="wood">
-			<canvas id="selector" width="370" height="70"></canvas>
-		</td>
-		<td class="wood" width=30%>
-			RIGHT FRAME
-		</td>
 	</table>
-	<div align="center">
-		<button onclick="newGame()">New Game</button>
-		<button onclick="resetRow()">Reset Row</button>
-		<button onclick="testRow()">Test Row</button>
-    </div>
-	
-
-	<p>Sources</p>
-	<p>Wood panelling: <a href="https://www.pixeden.com/graphic-web-backgrounds/wood-pattern-background" target="_blank">www.pixeden.com</a>
-
     <script>
 		
 		// create GameBoard context and mouse position tracker
@@ -129,7 +123,6 @@
 				color_number = random_array[i];
 				color_array[i] = color_boxes_shades[color_number];
 			}
-			document.getElementById("outputB").innerHTML = color_array;
 			return color_array;
 		}
 
@@ -168,8 +161,8 @@
 				for (var c=0; c<8; c++) {
 					pegs[c] = ['x'];
 					for (var r=0; r<4; r++) {
-						pegs[c][r] = {x:10 + 60*r, 
-							y:220 + 60*c,
+						pegs[c][r] = {x:60 + 60*r, 
+							y:100 + 60*c,
 							height:50,
 							width:50,
 							color:'white'};
@@ -325,7 +318,6 @@
 				}	
 			}
 			
-			document.getElementById("output").innerHTML = temp_rowbeingtested;
 			feedback_array[activeRow][0] = num_correct_place;
 			feedback_array[activeRow][1] = num_correct_color;
 		}
@@ -349,29 +341,27 @@
 		
 		function drawActiveColor() {
 			game_ctx.beginPath();
-			game_ctx.rect(340, 640, 50, 50);
+			game_ctx.rect(60, 620, 230, 25);
 			game_ctx.fillStyle = select_color;
 			game_ctx.fill();
 			game_ctx.closePath();
 		}
 		
-
-		
 		function drawActiveBox() {
 			game_ctx.beginPath();
-			game_ctx.strokeRect(5, game.height-485+(60*activeRow), 240, 60);
+			game_ctx.strokeRect(55, 95+(60*activeRow), 240, 60);
 		}
 		
 		function drawAnswerFrame() {
 			game_ctx.beginPath();
 			game_ctx.fillStyle = 'white';
-			game_ctx.fillRect(0, 0, 250, 70);
+			game_ctx.fillRect(50, 20, 250, 70);
 		}
 		
 		function drawAnswer() {
 			for (var i = 0; i < 4; i++) {
 				game_ctx.beginPath();
-				game_ctx.rect(10 + 60*i, 10, 50, 50);
+				game_ctx.rect(55 + 60*i, 30, 50, 50);
 				game_ctx.fillStyle = solution[i];
 				game_ctx.fill();
 				game_ctx.closePath();
@@ -382,7 +372,7 @@
 			for (var i = 0; i < 8; i++) {
 				game_ctx.fillStyle = 'black';
 				game_ctx.font = "12 px Arial";
-				game_ctx.fillText("[" + feedback_array[i] + "]", 260, 250+(60*i));
+				game_ctx.fillText("[" + feedback_array[i] + "]", 312.5, 130+(60*i));
 				}
 		}
 
@@ -398,9 +388,8 @@
 
 
 			game_ctx.fillStyle = 'black';
-			game_ctx.textAlign = "center";
 			game_ctx.font = "12px Arial";
-			game_ctx.fillText("Active Color", 363, 637);
+			game_ctx.textAlign = "center";
 			drawFeedback();			
 			
 			if (show_answer == true) {
@@ -409,7 +398,7 @@
 				game_ctx.fillStyle = "black";
 				game_ctx.textAlign = "center";
 				game_ctx.font = "48px Arial";
-				game_ctx.fillText(win_or_lose_message, canvas_x, 150);
+				game_ctx.fillText(win_or_lose_message, canvas_x, 620);
 			}
 		}
 	
